@@ -42,7 +42,7 @@ func TestBingoSolverFindsGoodSolution(t *testing.T) {
 	bingoSolver.LoadBoard(board2)
 	bingoSolver.LoadBoard(board3)
 
-	winningScore := bingoSolver.GetWinningBoardScoreFor(drawnNumbers)
-
+	winningScore, err  := bingoSolver.GetWinningBoardScoreFor(drawnNumbers)
+	assert.Nil(t, err)
 	assert.Equal(t, 4512, winningScore)
 }

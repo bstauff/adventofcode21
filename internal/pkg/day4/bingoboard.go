@@ -18,3 +18,15 @@ func NewBingoBoard(numbers [][]int) *BingoBoard {
 	}
 	return board
 }
+
+func (board *BingoBoard) MarkNumber(number int) {
+	board.numberToMarkStatus[number] = true
+}
+
+func (board BingoBoard) HasBoardWon() bool {
+	return false
+}
+
+func (board BingoBoard) CalculateBoardScore() int {
+	return 0
+}
