@@ -1,11 +1,20 @@
 package day4
 
 type BingoBoard struct {
-	numbers [][]int
+	numberToMarkStatus map[int]bool
+	numberLocations    map[int][2]int
 }
 
 func NewBingoBoard(numbers [][]int) *BingoBoard {
 	board := new(BingoBoard)
-	board.numbers = numbers
+
+	board.numberLocations = make(map[int][2]int, 25)
+	board.numberToMarkStatus = make(map[int]bool, 25)
+
+	for i := range numbers {
+		for j := range numbers[i] {
+			board.numberLocations[numbers[i][j]] = [2]int{i, j}
+		}
+	}
 	return board
 }
