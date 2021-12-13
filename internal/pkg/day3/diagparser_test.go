@@ -54,6 +54,13 @@ func TestGetPowerConsumptionHasGoodResults(t *testing.T) {
 }
 
 func TestGetLifeSupportRatingHasGoodResults(t *testing.T) {
+	masks := []uint16{
+		0x10,
+		0x8,
+		0x4,
+		0x2,
+		0x1,
+	}
 	input := []uint16 {
 		0b00100,
 		0b11110,
@@ -69,7 +76,45 @@ func TestGetLifeSupportRatingHasGoodResults(t *testing.T) {
 		0b01010,
 	}
 
-	lifeSupportRating := GetLifeSupportRating(input, 0b0000000000011111)
+	lifeSupportRating := GetLifeSupportRating(input, masks)
 
 	assert.Equal(t, uint64(230), lifeSupportRating)
+}
+
+func TestGetLifeSupportRatingWithLargeInputHasGoodResults(t *testing.T) {
+	masks := []uint16{
+		0x800,
+		0x400,
+		0x200,
+		0x100,
+		0x80,
+		0x40,
+		0x20,
+		0x10,
+		0x8,
+		0x4,
+		0x2,
+		0x1,
+	}
+	transformFunc := func(s string) (interface{}, error) {
+		parsedBytes, err := strconv.ParseUint(s, 2, 16)
+
+		if err != nil {
+			return nil, err
+		}
+		return parsedBytes, nil
+	}
+
+	input, err := helpers.ReadInput("input.txt", transformFunc)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	castInput := make([]uint16, len(input))
+	for i, data := range input {
+		castInput[i] = uint16(data.(uint64))
+	}
+	lifeSupportRating := GetLifeSupportRating(castInput, masks)
+
+	assert.Equal(t, uint64(6775520), lifeSupportRating)
 }

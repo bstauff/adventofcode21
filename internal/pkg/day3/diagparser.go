@@ -10,62 +10,15 @@ func GetPowerConsumption(diagReport []uint16, resultBitMask uint16) uint64 {
 	return powerRating
 }
 
-func GetLifeSupportRating(diagReport []uint16, resultBitMask uint16) uint64 {
-	mostCommonBits := getMostCommonBits(diagReport)
+func GetLifeSupportRating(diagReport []uint16, positionMasks []uint16) uint64 {
 
-	masks := []uint16{
-		// 0x800,
-		// 0x400,
-		// 0x200,
-		// 0x100,
-		// 0x80,
-		// 0x40,
-		// 0x20,
-		0x10,
-		0x8,
-		0x4,
-		0x2,
-		0x1,
-	}
-	trimmed := make([]uint16, 0, len(diagReport))
-	copy(trimmed, diagReport)
-	for _, mask := range masks {
-		
-	}
+	oxygenRating := getOxygenRating(diagReport, positionMasks)
 
+	scrubberRating := getScrubberRating(diagReport, positionMasks)
 
+	liftSupportRating := uint64(oxygenRating) * uint64(scrubberRating)
 
-	oxygenRating := recursiveFilter(mostCommonBits, masks, 0, diagReport)
-
-	return uint64(oxygenRating[0])
-}
-
-func recursiveFilter(commonBits uint16, masks []uint16, maskIndex int, diagReports []uint16) []uint16 {
-	if len(diagReports) == 1 || maskIndex == len(masks) {
-		return diagReports
-	}
-
-	trimmed := filterWithMask(masks[maskIndex], diagReports, commonBits)
-
-	return recursiveFilter(commonBits, masks, maskIndex + 1, trimmed)
-}
-
-
-
-
-func filterWithMask(bitmask uint16, diagReports []uint16, commonBits uint16) []uint16 {
-	trimmedReports := make([]uint16, 0, len(diagReports))
-
-	for _, report := range diagReports {
-		bitvalue := report & bitmask
-
-		shouldGrabReport := bitvalue^(commonBits&bitmask) == 0
-
-		if shouldGrabReport {
-			trimmedReports = append(trimmedReports, report)
-		}
-	}
-	return trimmedReports
+	return liftSupportRating
 }
 
 func getMostCommonBits(diagReport []uint16) uint16 {
@@ -103,4 +56,86 @@ func getMostCommonBits(diagReport []uint16) uint16 {
 	}
 
 	return mostCommonBits
+}
+
+func getMostCommonBitForPosition(diagReports []uint16, positionMask uint16) uint16 {
+	numberOfEntries := len(diagReports)
+	countOfSetBits := 0
+
+	for _, report := range diagReports {
+		if report&positionMask == positionMask {
+			countOfSetBits++
+		}
+	}
+
+	if countOfSetBits >= numberOfEntries-countOfSetBits {
+		return positionMask
+	} else {
+		return 0
+	}
+}
+
+func getLeastCommonBitForPosition(diagReports []uint16, positionMask uint16) uint16 {
+	numberOfEntries := len(diagReports)
+	numberOfOnes := 0
+
+	for _, report := range diagReports {
+		if report&positionMask == positionMask {
+			numberOfOnes++
+		}
+	}
+
+	numberOfZeroes := numberOfEntries - numberOfOnes
+
+	if numberOfOnes < numberOfZeroes {
+		return positionMask
+	} else {
+		return 0
+	}
+}
+
+func getOxygenRating(diagReport []uint16, masks []uint16) uint16 {
+	searchSpace := diagReport
+	for _, mask := range masks {
+		mostCommonBitInPosition := getMostCommonBitForPosition(searchSpace, mask)
+		newSearchSpace := make([]uint16, 0, len(searchSpace))
+		for _, entry := range searchSpace {
+			bitvalue := entry & mask
+
+			shouldGrabReport := bitvalue^(mostCommonBitInPosition&mask) == 0
+
+			if shouldGrabReport {
+				newSearchSpace = append(newSearchSpace, entry)
+			}
+		}
+		searchSpace = newSearchSpace
+
+		if len(searchSpace) == 1 {
+			break
+		}
+	}
+	return searchSpace[0]
+}
+
+func getScrubberRating(diagReport []uint16, masks []uint16) uint16 {
+	searchSpace := diagReport
+	for _, mask := range masks {
+		leastCommonBitInPosition := getLeastCommonBitForPosition(searchSpace, mask)
+		newSearchSpace := make([]uint16, 0, len(searchSpace))
+		for _, entry := range searchSpace {
+			bitvalue := entry & mask
+
+			shouldGrabReport := bitvalue^(leastCommonBitInPosition&mask) == 0
+
+			if shouldGrabReport {
+				newSearchSpace = append(newSearchSpace, entry)
+			}
+		}
+		searchSpace = newSearchSpace
+
+		if len(searchSpace) == 1 {
+			break
+		}
+	}
+	return searchSpace[0]
 }
