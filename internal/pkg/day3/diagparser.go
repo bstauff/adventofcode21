@@ -94,9 +94,9 @@ func getLeastCommonBitForPosition(diagReports []uint16, positionMask uint16) uin
 	}
 }
 
-func getOxygenRating(diagReport []uint16, masks []uint16) uint16 {
+func getOxygenRating(diagReport []uint16, positionMasks []uint16) uint16 {
 	searchSpace := diagReport
-	for _, mask := range masks {
+	for _, mask := range positionMasks {
 		mostCommonBitInPosition := getMostCommonBitForPosition(searchSpace, mask)
 		newSearchSpace := make([]uint16, 0, len(searchSpace))
 		for _, entry := range searchSpace {
@@ -117,9 +117,9 @@ func getOxygenRating(diagReport []uint16, masks []uint16) uint16 {
 	return searchSpace[0]
 }
 
-func getScrubberRating(diagReport []uint16, masks []uint16) uint16 {
+func getScrubberRating(diagReport []uint16, positionMasks []uint16) uint16 {
 	searchSpace := diagReport
-	for _, mask := range masks {
+	for _, mask := range positionMasks {
 		leastCommonBitInPosition := getLeastCommonBitForPosition(searchSpace, mask)
 		newSearchSpace := make([]uint16, 0, len(searchSpace))
 		for _, entry := range searchSpace {
