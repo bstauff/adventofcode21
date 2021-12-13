@@ -14,14 +14,8 @@ func NewBingoBoard(numbers [][]int) *BingoBoard {
 	board.numberLocations = make(map[int][]int)
 
 	board.columnMarks = make(map[int][]int, 5)
-	for i := range board.columnMarks {
-		board.columnMarks[i] = make([]int, 5)
-	}
 
 	board.rowMarks = make(map[int][]int, 5)
-	for i := range board.rowMarks {
-		board.rowMarks[i] = make([]int, 5)
-	}
 
 	board.markedNumbers = make([]int, 0, 25)
 
