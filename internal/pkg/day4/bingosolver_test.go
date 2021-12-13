@@ -6,6 +6,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBoardMarkNumberHasWonReturnsWin(t *testing.T) {
+	drawnNumbers := []int{8,2,23,4,24}
+
+	board1Numbers := [][]int{
+		{22, 13, 17, 11, 0},
+		{8, 2, 23, 4, 24},
+		{21, 9, 14, 16, 7},
+		{6, 10, 3, 18, 5},
+		{1, 12, 20, 15, 19},
+	}
+	board1 := NewBingoBoard(board1Numbers)
+	
+	score := 0	
+
+	for _, number := range drawnNumbers {
+		board1.MarkNumber(number)
+		if board1.HasBoardWon() {
+			score = board1.CalculateBoardScore()
+			break
+		}
+	}
+
+	assert.Equal(t, 239, score)
+}
+
 func TestBingoSolverFindsGoodSolution(t *testing.T) {
 	drawnNumbers := []int{7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1}
 

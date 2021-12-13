@@ -20,7 +20,7 @@ func (solver BingoSolver) GetWinningBoardScoreFor(numbers []int) (int, error) {
 		for _, board := range solver.boards {
 			board.MarkNumber(number)
 			if board.HasBoardWon() {
-				return board.CalculateBoardScore(), nil
+				return board.CalculateBoardScore() * number, nil
 			}
 		}
 	}
