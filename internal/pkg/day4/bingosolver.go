@@ -47,5 +47,9 @@ func (solver BingoSolver) GetScoreOfLastBoardToWin(numbers []int) (int, error) {
 		}
 	}
 
-	return lastWinningBoard.GetFinalScore(), errors.New("no winning board found")
+	if lastWinningBoard == nil {
+		return 0, errors.New("no winning board found")
+	}
+
+	return lastWinningBoard.GetFinalScore(), nil
 }

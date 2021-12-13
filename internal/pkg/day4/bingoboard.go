@@ -34,11 +34,11 @@ func NewBingoBoard(numbers [][]int) *BingoBoard {
 }
 
 func (board *BingoBoard) MarkNumber(number int) {
-	board.markedNumbers = append(board.markedNumbers, number)
 	numberLocation := board.numberLocations[number]
 	if numberLocation == nil {
 		return
 	}
+	board.markedNumbers = append(board.markedNumbers, number)
 	board.columnMarks[numberLocation[1]] = append(board.columnMarks[numberLocation[1]], number)
 	board.rowMarks[numberLocation[0]] = append(board.rowMarks[numberLocation[0]], number)
 }
